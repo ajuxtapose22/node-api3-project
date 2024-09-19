@@ -30,7 +30,7 @@ router.post('/', validateUser, (req, res, next) => {
   // RETURN THE NEWLY CREATED USER OBJECT
   // this needs a middleware to check that the request body is valid
   console.log(req.name)
-  User.insert({ name: req.name })
+  User.insert({ name: req.body.name })
     .then(newUser => {
       res.status(201).json(newUser)
     })
@@ -60,11 +60,15 @@ router.delete('/:id', validateUserId, (req, res, next) => {
   .catch(next)
 });
 
-router.get('/:id/posts', validateUserId, (req, res) => {
+router.get('/:id/posts', validateUserId, (req, res, next) => {
   // RETURN THE ARRAY OF USER POSTS
-  Post.getById(req.params.id)
+  Post.getByUserId(req.params.id)
   .then(posts => {
-    res.json(posts)
+    if (posts.length) {
+      res.json(posts)
+    } else {
+      res.status(404).json({ message: "No posts found for this user"})
+    }
   })
   .catch(next)
 });
@@ -73,10 +77,14 @@ router.post('/:id/posts', validateUserId, validatePost, (req, res, next) => {
   // RETURN THE NEWLY CREATED USER POST
   // this needs a middleware to verify user id
   // and another middleware to check that the request body is valid
- const post = { id: req.params.id, text: req.body.text}
+ const post = { user_id: req.params.id, text: req.body.text}
  Post.insert(post)
  .then(newPost => {
-  res.status(201).json(newPost)
+  if (newPost) {
+    res.status(201).json(newPost)
+  } else {
+    res.status(404).json({ message: "Post could not be created"})
+  }
  })
  .catch(next)
 });
