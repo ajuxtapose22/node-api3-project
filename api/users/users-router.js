@@ -62,7 +62,7 @@ router.delete('/:id', validateUserId, (req, res, next) => {
 
 router.get('/:id/posts', validateUserId, (req, res, next) => {
   // RETURN THE ARRAY OF USER POSTS
-  Post.getByUserId(req.params.id)
+  User.getUserPosts(req.params.id)
   .then(posts => {
     if (posts.length) {
       res.json(posts)

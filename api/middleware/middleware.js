@@ -14,7 +14,7 @@ try {
   const user = await User.getById(req.params.id)
   if(!user) {
     res.status(404).json({
-      message: "no such user"
+      message: "User not found"
     })
   } else {
     req.user = user
